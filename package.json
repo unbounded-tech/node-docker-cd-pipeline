@@ -4,6 +4,7 @@
   "description": "companion repo for continuous deployment with docker presentation",
   "main": "dist/index.js",
   "scripts": {
+    "build": "babel src -d dist",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage"
   },
@@ -29,5 +30,9 @@
   },
   "dependencies": {
     "jest": "^21.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0"
   }
 }
