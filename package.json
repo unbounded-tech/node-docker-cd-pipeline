@@ -4,7 +4,8 @@
   "description": "companion repo for continuous deployment with docker presentation",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch --coverage"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,18 @@
   "bugs": {
     "url": "https://github.com/patrickleet/node-docker-cd-pipeline/issues"
   },
-  "homepage": "https://github.com/patrickleet/node-docker-cd-pipeline#readme"
+  "homepage": "https://github.com/patrickleet/node-docker-cd-pipeline#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "modulePaths": [
+      "src",
+      "/node_modules/"
+    ],
+    "collectCoverageFrom": [
+      "src"
+    ]
+  },
+  "dependencies": {
+    "jest": "^21.1.0"
+  }
 }
