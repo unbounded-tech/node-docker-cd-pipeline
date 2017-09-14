@@ -1,0 +1,19 @@
+{
+  "name": "cd-with-docker-example",
+  "version": "1.0.0",
+  "description": "companion repo for continuous deployment with docker presentation",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrickleet/node-docker-cd-pipeline.git"
+  },
+  "author": "Patrick Scott",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/patrickleet/node-docker-cd-pipeline/issues"
+  },
+  "homepage": "https://github.com/patrickleet/node-docker-cd-pipeline#readme"
+}
