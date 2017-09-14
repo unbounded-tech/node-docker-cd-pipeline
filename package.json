@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src -d dist",
+    "start": "nodemon src/index.js --watch src --exec babel-node",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage"
   },
@@ -23,16 +24,15 @@
     "modulePaths": [
       "src",
       "/node_modules/"
-    ],
-    "collectCoverageFrom": [
-      "src"
     ]
   },
   "dependencies": {
-    "jest": "^21.1.0"
+    "fastify": "^0.27.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.0"
+    "babel-preset-env": "^1.6.0",
+    "jest": "^21.1.0",
+    "nodemon": "^1.12.0"
   }
 }
