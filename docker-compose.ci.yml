@@ -1,9 +1,5 @@
 version: '2.1'
 
-networks:
-  test:
-    external: false
-
 services:
 
   # This file is for the continunous integration testing process.
@@ -84,14 +80,14 @@ services:
     environment:
       - NODE_ENV=staging
     networks:
-      - test
+      - default
 
   # reinstall dev deps to get testing tools and run staging tests
   staging:
     extends:
       service: base
     networks:
-      - test
+      - default
     environment:
       - apiUrl=http://staging-deps:$PORT
     command: npm run test:staging
