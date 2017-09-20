@@ -246,13 +246,11 @@ def dockerTagAndPush(tag) {
 }
 
 def notifyGithub(String context, String status = 'PENDING') {
-  def contexts = [
-    {
-      'Lint': 'Ensures coding standards are upheld',
-      'Unit Tests': 'Ensures code functions as expected and defined interfaces are tracked'
-      'Staging Tests': 'Ensures interfaces with external dependencies are working properly'
-    }
-  ]
+  def contexts = {
+    "Lint": 'Ensures coding standards are upheld',
+    "Unit Tests": 'Ensures code functions as expected and defined interfaces are tracked'
+    "Staging Tests": 'Ensures interfaces with external dependencies are working properly'
+  }
   
   githubNotify  credentialsId: "${env.credentialsId}", 
                 context: context,
