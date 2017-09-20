@@ -50,6 +50,14 @@ def prepare() {
     fileExists 'Dockerfile'
     fileExists 'stack.yml'
     fileExists 'package.json'
+
+    // Useful for debugging
+    sh "cat docker-compose.ci.yml"
+    sh "cat Dockerfile"
+    sh "cat Jenkinsfile"
+    sh "cat package.json"
+    sh "pwd"
+    sh "ls -la"
   }
 }
 
