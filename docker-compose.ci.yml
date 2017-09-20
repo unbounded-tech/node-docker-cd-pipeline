@@ -71,7 +71,7 @@ services:
 
   # The current directory contains /dist, and /node_modules with only production dependencies
   staging-deps:
-    image: myservice
+    image: cd-example
     environment:
       - NODE_ENV=staging
     networks:
