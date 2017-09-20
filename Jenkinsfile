@@ -36,7 +36,7 @@ def runCI() {
     build(imageName)
     stagingTests()
     tryPublish(imageName, prodTag, prodLatestTag, devTag, devLatestTag)
-    release()
+    release(qaDomain, prodDomain, devTag, prodTag, stackName)
   }
 }
 
@@ -72,7 +72,6 @@ def installDevDependencies() {
 
 def runTests() {
   stage("Tests") {
-
     parallel(
       lint: {
         try {
@@ -125,21 +124,19 @@ def prepareStaging() {
 }
 
 def runStagingTests() {
-  withEnv([]) {
-    try {
-      notifyGithubStaging()
+  try {
+    notifyGithubStaging()
 
-      sh "docker-compose up -d staging-deps"
-      sh "sleep 10"
-      sh "docker-compose run --rm staging"
-      
-      notifyGithubStaging('SUCCESS')
-    } catch(e) {
-      notifyGithubStaging('FAILURE')
-      error "Staging failed"
-    } finally {
-      sh "docker-compose down"
-    }
+    sh "docker-compose up -d staging-deps"
+    sh "sleep 10"
+    sh "docker-compose run --rm staging"
+
+    notifyGithubStaging('SUCCESS')
+  } catch(e) {
+    notifyGithubStaging('FAILURE')
+    error "Staging failed"
+  } finally {
+    sh "docker-compose down"
   }
 }
 
@@ -166,81 +163,49 @@ def publish(String imageName, String tag, String latestTag) {
   }
 }
 
-def release() {
+def release(qaDomain, prodDomain, devImageVersion, prodImageVersion, stackName) {
   if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev') {
       sh "docker-compose run --rm install"
 
-        if (env.BRANCH_NAME == 'dev') {
+      if (env.BRANCH_NAME == 'dev') {
+        stage("QA") {
           withEnv(["NODE_ENV=staging"]) {
-            qa()
+            deploy(qaDomain, devImageVersion, stackName, 'last-qa')
           }
         }
+      }
 
-        if (env.BRANCH_NAME == 'master') {
+      if (env.BRANCH_NAME == 'master') {
+        stage("Production") {
           withEnv(["NODE_ENV=production"]) {
-            production()
+            deploy(prodDomain, prodImageVersion, stackName, 'last-prod')
           }
         }
+      }
 
   }
 }
 
-def qa() {
-  stage("QA") {
-    withEnv([
-      "SERVICE_DOMAIN=${qaDomain}"
-    ]) {
-      try {
-        withEnv([
-          "TAG=${devImageVersion}"
-        ]) {
-          sh "docker stack deploy -c stack.yml qa-${stackName}"
-        }
+def deploy(stage, domain, imageVersion, stackName, lastTag) {
+  withEnv([
+    "SERVICE_DOMAIN=${domain}"
+  ]) {
+    try {
+      withEnv([
+        "TAG=${imageVersion}"
+      ]) {
+        sh "docker stack deploy -c stack.yml qa-${stackName}"
+        dockerTagAndPush(lastTag)
+      }
 
-      } catch(e) {
-        withEnv([
-          "TAG=last-qa"
-        ]) {
-          sh "docker stack deploy -c stack.yml qa-${stackName}"
-          error "Deployment to QA has failed"
-        }
+    } catch(e) {
+      withEnv([
+        "TAG=${lastTag}"
+      ]) {
+        sh "docker stack deploy -c stack.yml qa-${stackName}"
+        error "Deployment to QA has failed"
       }
     }
-  }
-
-  stage("Publish Last Successful QA Deploy") {
-    // QA deploy went successfully, tag last-qa as a rollback point
-    dockerTagAndPush('last-qa')
-  }
-}
-
-def production() {
-  stage("Production") {
-
-    withEnv([
-      "SERVICE_DOMAIN=${prodDomain}"
-    ]) {
-      try {
-        withEnv([
-          "TAG=0.${env.BUILD_NUMBER}"
-        ]) {
-          sh "docker stack deploy -c stack.yml ${stackName}"
-        }
-      } catch(e) {
-        // Rollback to last
-        withEnv([
-          "TAG=last-prod"
-        ]) {
-          sh "docker stack deploy -c stack.yml ${stackName}"
-          error "Deployment to Production has failed"
-        }
-      }
-    }
-  }
-
-  stage("Publish Last Successful Production Deploy") {
-    // QA deploy went successfully, tag last-prod as a rollback point
-    dockerTagAndPush('last-prod')
   }
 }
 
