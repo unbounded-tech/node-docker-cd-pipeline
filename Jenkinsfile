@@ -61,7 +61,7 @@ def installDevDependencies() {
 def runTests() {
   stage("Tests") {
     notifyGithub('Lint')
-    notifyGithub('Unit Tests')
+    notifyGithub('UnitTests')
 
     parallel(
       lint: {
@@ -77,9 +77,9 @@ def runTests() {
         try {
           sh "docker-compose run --rm unit-tests"
           // sh "docker-compose run --rm codecov"
-          notifyGithub('Unit Tests', 'SUCCESS')
+          notifyGithub('UnitTests', 'SUCCESS')
         } catch(e) {
-          notifyGithub('Unit Tests', 'FAILURE')
+          notifyGithub('UnitTests', 'FAILURE')
           error "Unit Tests Failed"
         }
       }
@@ -115,15 +115,15 @@ def prepareStaging() {
 def runStagingTests() {
   withEnv([]) {
     try {
-      notifyGithub('Staging Tests')
+      notifyGithub('StagingTests')
 
       sh "docker-compose up -d staging-deps"
       sh "sleep 10"
       sh "docker-compose run --rm staging"
       
-      notifyGithub('Staging Tests', 'SUCCESS')
+      notifyGithub('StagingTests', 'SUCCESS')
     } catch(e) {
-      notifyGithub('Staging Tests', 'FAILURE')
+      notifyGithub('StagingTests', 'FAILURE')
       error "Staging failed"
     } finally {
       sh "docker-compose down"
@@ -247,9 +247,9 @@ def dockerTagAndPush(tag) {
 
 def notifyGithub(String context, String status = 'PENDING') {
   def contexts = {
-    "Lint": 'Ensures coding standards are upheld',
-    "Unit Tests": 'Ensures code functions as expected and defined interfaces are tracked'
-    "Staging Tests": 'Ensures interfaces with external dependencies are working properly'
+    Lint: 'Ensures coding standards are upheld',
+    UnitTests: 'Ensures code functions as expected and defined interfaces are tracked'
+    StagingTests: 'Ensures interfaces with external dependencies are working properly'
   }
   
   githubNotify  credentialsId: "${env.credentialsId}", 
