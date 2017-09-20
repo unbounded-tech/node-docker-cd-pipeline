@@ -8,7 +8,7 @@ networks:
 services:
 
   example:
-    image: localhost:5000/cd-example:${TAG:-latest}
+    image: registry.imakethingsfortheinternet.com/cd-example:${TAG:-latest}
     environment:
       - NODE_ENV=production
       - PORT=3000
