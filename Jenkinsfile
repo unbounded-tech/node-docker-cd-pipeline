@@ -246,9 +246,9 @@ def production() {
 
 def dockerTagAndPush(imageName, tag) {
   sh "docker tag ${imageName} \
-    registry.imakethingsfortheinternet.com:5000/${imageName}:${tag}"
+    registry.imakethingsfortheinternet.com/${imageName}:${tag}"
   sh "docker push \
-    registry.imakethingsfortheinternet.com:5000/${imageName}:${tag}"
+    registry.imakethingsfortheinternet.com/${imageName}:${tag}"
 }
 
 def notifyGithubLint(String status = "PENDING") {
