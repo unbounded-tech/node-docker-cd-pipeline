@@ -8,8 +8,9 @@
     "lint": "eslint src __tests__",
     "lint:fix": "eslint --fix src __tests__",
     "start": "nodemon src/index.js --watch src node_modules --exec babel-node",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch --coverage"
+    "test": "jest --config jest.json --coverage",
+    "test:staging": "jest --config jest.staging.json",
+    "test:watch": "jest --config jest.json --watch --coverage"
   },
   "repository": {
     "type": "git",
@@ -21,14 +22,8 @@
     "url": "https://github.com/patrickleet/node-docker-cd-pipeline/issues"
   },
   "homepage": "https://github.com/patrickleet/node-docker-cd-pipeline#readme",
-  "jest": {
-    "testEnvironment": "node",
-    "modulePaths": [
-      "src",
-      "/node_modules/"
-    ]
-  },
   "dependencies": {
+    "cconfig": "^1.2.4",
     "fastify": "^0.27.0",
     "llog": "0.0.13",
     "pino": "^4.7.2"
@@ -44,6 +39,7 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "jest": "^21.1.0",
+    "node-fetch": "^1.7.3",
     "nodemon": "^1.12.0"
   }
 }

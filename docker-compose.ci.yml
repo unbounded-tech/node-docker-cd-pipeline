@@ -27,6 +27,7 @@ services:
       - JENKINS_URL=$NPM_TOKEN
       - GIT_BRANCH=$GIT_BRANCH
       - SNYK_TOKEN=$SNYK_TOKEN
+      - PORT=3000
 
   clean:
     extends:
@@ -44,7 +45,7 @@ services:
     command: ash -c "node -p \"require('./package.json').version.replace('\n', '')\""
 
   # output: node_modules/ with all dependencies
-  devDeps:
+  install:
     extends:
       service: base
     command: npm i
@@ -67,10 +68,15 @@ services:
 
   # also deleting unneeded cache for minimal build size
   # npm prune wasn't working on alpine linux
+  installProdOnly:
+    extends:
+      service: base
+    command: ash -c "npm install --only=production"
+
   prodDeps:
     extends:
       service: base
-    command: ash -c "mv -f ./node_modules ./dev_node_modules && npm install --only=production"
+    command: ash -c "mv -f ./node_modules ./prod_node_modules && mv -f ./dev_node_modules ./node_modules"
 
   # The current directory contains /dist, and /node_modules with only production dependencies
   staging-deps:
@@ -87,19 +93,19 @@ services:
     networks:
       - test
     environment:
-      - graphqlURL=http://staging-deps:3010
+      - apiUrl=http://staging-deps:$PORT
     command: npm run test:staging
 
   qa:
     extends: 
       service: base
     environment: 
-      - graphqlURL=${graphqlURL:-http://qa-api.yourwebsite.com}
+      - apiUrl=${apiUrl:-http://qa-api.yourwebsite.com}
     command: npm run test:staging
 
   production:
     extends: 
       service: base
     environment: 
-      - graphqlURL=${graphqlURL:-http://api.yourwebsite.com}
+      - apiUrl=${apiUrl:-http://api.yourwebsite.com}
     command: npm run test:staging
