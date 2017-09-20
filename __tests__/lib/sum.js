@@ -20,11 +20,11 @@ describe('lib/sum', () => {
 
     expect(() => {
       sum()
-    }).toThrow();
+    }).toThrow()
 
     expect(() => {
       sum(1, 'octupus')
-    }).toThrow();
+    }).toThrow()
   })
 
   it('adds two numbers together', () => {
@@ -33,5 +33,4 @@ describe('lib/sum', () => {
     let total = sum(x, y)
     expect(total).toBe(30)
   })
-  
 })

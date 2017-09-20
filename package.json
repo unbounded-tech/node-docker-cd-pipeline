@@ -5,6 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src -d dist",
+    "lint": "eslint src __tests__",
+    "lint:fix": "eslint --fix src __tests__",
     "start": "nodemon src/index.js --watch src --exec babel-node",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage"
@@ -32,7 +34,14 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.0",
     "babel-preset-env": "^1.6.0",
+    "eslint": "^4.7.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "jest": "^21.1.0",
     "nodemon": "^1.12.0"
   }

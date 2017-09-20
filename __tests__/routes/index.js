@@ -1,7 +1,6 @@
 import indexRoute from 'routes/index'
 
 describe('routes/index', () => {
-
   it('exports a function', () => {
     expect(typeof indexRoute).toBe('function')
   })
@@ -16,5 +15,4 @@ describe('routes/index', () => {
 
     expect(reply.send).toBeCalled()
   })
-
 })

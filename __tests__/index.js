@@ -13,7 +13,7 @@ describe('index', () => {
   beforeEach(() => {
     server = require('lib/server')
   })
-  
+
   it('exists', () => {
     expect(index).toBeDefined()
   })
@@ -21,7 +21,7 @@ describe('index', () => {
   it('server listens on ports 3000', () => {
     expect(server.listen)
       .toBeCalledWith(
-        3000, 
+        3000,
         expect.any(Function)
       )
   })
@@ -29,9 +29,8 @@ describe('index', () => {
   it('get /', () => {
     expect(server.get)
       .toBeCalledWith(
-        '/', 
+        '/',
         expect.any(Function)
       )
   })
-
 })
