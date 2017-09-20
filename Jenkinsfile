@@ -1,18 +1,9 @@
-def prodDomain = "cd-example.devopsbliss.com"
-def qaDomain = "cd-example-qa.devopsbliss.com"
-def imageName = "cd-example"
-def stackName = "cd-example"
-def prodImageVersion = "0.${env.BUILD_NUMBER}"
-def devImageVersion = "d${prodImageVersion}"
-
 node("docker") {
   notifyBuild('STARTED')
   pull()
 
-  def dir = sh(script: "pwd", returnStdout:true)
-
   try {
-    runCI(dir)
+    runCI()
   } catch (e) {
     // If there was an exception thrown, the build failed
     currentBuild.result = "FAILED"
@@ -30,10 +21,18 @@ def runCI(dir) {
     "EMAIL=pat@patscott.io",
     "DIR=${dir}"
   ]) {
+
+    def prodDomain = "cd-example.devopsbliss.com"
+    def qaDomain = "cd-example-qa.devopsbliss.com"
+    def imageName = "cd-example"
+    def stackName = "cd-example"
+    def prodImageVersion = "0.${env.BUILD_NUMBER}"
+    def devImageVersion = "d${prodImageVersion}"
+
     prepare()
     installDevDependencies()
     runTests()
-    build()
+    build(imageName)
     stagingTests()
     tryPublish()
     release()
@@ -100,7 +99,7 @@ def runTests() {
   }
 }
 
-def build() {
+def build(imageName) {
   stage("Build") {
     withEnv(["NODE_ENV=production"]) {
       sh "docker-compose run --rm build"
