@@ -58,7 +58,6 @@ def prepare() {
     sh "cat Jenkinsfile"
     sh "cat package.json"
     sh "pwd"
-    sh "echo $DIR"
     sh "ls -la"
   }
 }
