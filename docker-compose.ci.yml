@@ -14,7 +14,7 @@ services:
   base:
     image: node:8-alpine
     volumes:
-      - .:/usr/src/app/
+      - ${DIR:-.}:/usr/src/app/
     working_dir: /usr/src/app/
     environment:
       - PORT=3000
@@ -36,17 +36,13 @@ services:
 
   # output: node_modules/ with all dependencies
   install:
-    image: node:8-alpine
-    volumes:
-      - .:/usr/src/app/
-    working_dir: /usr/src/app/
+    extends:
+      service: base
     command: ash -c "npm i"
 
   lint:
-    image: node:8-alpine
-    volumes:
-      - .:/usr/src/app/
-    working_dir: /usr/src/app/
+    extends:
+      service: base
     command: ash -c "npm run lint"
 
   unit-tests:

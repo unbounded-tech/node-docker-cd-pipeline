@@ -4,6 +4,7 @@ def imageName = "cd-example"
 def stackName = "cd-example"
 def prodImageVersion = "0.${env.BUILD_NUMBER}"
 def devImageVersion = "d${prodImageVersion}"
+def dir = sh(command: "pwd", returnStdout:true)
 
 node("docker") {
   notifyBuild('STARTED')
@@ -25,7 +26,8 @@ node("docker") {
 def runCI() {
   withEnv([
     "COMPOSE_FILE=docker-compose.ci.yml",
-    "EMAIL=pat@patscott.io"
+    "EMAIL=pat@patscott.io",
+    "DIR=${dir}"
   ]) {
     prepare()
     installDevDependencies()
