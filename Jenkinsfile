@@ -25,15 +25,17 @@ def runCI() {
     def qaDomain = "cd-example-qa.devopsbliss.com"
     def imageName = "cd-example"
     def stackName = "cd-example"
-    def prodImageVersion = "0.${env.BUILD_NUMBER}"
-    def devImageVersion = "d${prodImageVersion}"
+    def prodTag = "0.${env.BUILD_NUMBER}"
+    def devTag = "d${prodImageVersion}"
+    def prodLatestTaf = "latest"
+    def devLatestTag = "dlatest"
 
     prepare()
     installDevDependencies()
     runTests()
     build(imageName)
     stagingTests()
-    tryPublish()
+    tryPublish(prodTag, prodLatestTag, devTag, devLatestTag)
     release()
   }
 }
@@ -141,9 +143,26 @@ def runStagingTests() {
   }
 }
 
-def tryPublish() {
-  if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev') {
-    publish()
+def tryPublish(String prodTag, String prodLatestTag, String devTag, String devLatestTag) {
+  if (env.BRANCH_NAME == 'master') {
+    publish(prodTag, prodLatestTag)
+  }
+
+  if (env.BRANCH_NAME == 'dev') {
+    publish(devTag, devLatestTag)
+  }
+}
+
+def publish(String tag, String latestTag) {
+  stage("Publish") {
+    parallel(
+      publishVersion: {
+        dockerTagAndPush(tag)
+      },
+      publishLatest: {
+        dockerTagAndPush(latestTag)
+      }
+    )
   }
 }
 
@@ -163,29 +182,6 @@ def release() {
           }
         }
 
-  }
-}
-
-def publish() {
-  stage("Publish") {
-    parallel(
-      publishVersion: {
-        if (env.BRANCH_NAME == 'dev') {
-          dockerTagAndPush('latest', "${devImageVersion}")
-        }
-        if (env.BRANCH_NAME == 'master') {
-          dockerTagAndPush('latest', "${prodImageVersion}")
-        }
-      },
-      publishLatest: {
-        if (env.BRANCH_NAME == 'dev') {
-          dockerTagAndPush('dlatest')
-        }
-        if (env.BRANCH_NAME == 'master') {
-          dockerTagAndPush('latest')
-        }
-      }
-    )
   }
 }
 
