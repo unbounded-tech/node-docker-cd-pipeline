@@ -26,9 +26,9 @@ def runCI() {
     def imageName = "cd-example"
     def stackName = "cd-example"
     def prodTag = "0.${env.BUILD_NUMBER}"
-    def devTag = "d${prodImageVersion}"
-    def prodLatestTaf = "latest"
-    def devLatestTag = "dlatest"
+    def devTag = "d${prodTag}"
+    def prodLatestTag = "latest"
+    def devLatestTag = "d${prodLatestTag}"
 
     prepare()
     installDevDependencies()
