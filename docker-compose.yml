@@ -1,0 +1,20 @@
+version: '3.2'
+
+networks:
+  service:
+
+services:
+
+  myservice:
+    image: node:8-alpine
+    volumes:
+      - .:/usr/src/app/
+    working_dir: /usr/src/app/
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+      - port=3000
+    networks:
+      - service
+    command: npm run start

@@ -7,7 +7,7 @@
     "build": "babel src -d dist",
     "lint": "eslint src __tests__",
     "lint:fix": "eslint --fix src __tests__",
-    "start": "nodemon src/index.js --watch src --exec babel-node",
+    "start": "nodemon src/index.js --watch src node_modules --exec babel-node",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage"
   },
@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "fastify": "^0.27.0",
-    "llog": "0.0.12"
+    "llog": "0.0.13",
+    "pino": "^4.7.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

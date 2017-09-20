@@ -7,6 +7,8 @@ ci:
 					lint \
 					unit-tests \
 					build \
+					prodDeps \
+					docker-build \
 					staging
 
 clean:
@@ -22,8 +24,12 @@ unit-tests:
 	docker-compose run --rm unit-tests
 
 build:
-	NODE_ENV=production docker-compose run --rm build && \
-	docker-compose run --rm prune && \
+	NODE_ENV=production docker-compose run --rm build
+
+prodDeps:
+	docker-compose run --rm prodDeps
+
+docker-build:
 	docker build -t myservice .
 
 staging:

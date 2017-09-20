@@ -24,24 +24,24 @@ services:
       - NPM_TOKEN=$NPM_TOKEN
       - GH_TOKEN=$GH_TOKEN
       - CI=true
-      - JENKINS_URL
-      - GIT_BRANCH
+      - JENKINS_URL=$NPM_TOKEN
+      - GIT_BRANCH=$GIT_BRANCH
       - SNYK_TOKEN=$SNYK_TOKEN
 
   clean:
     extends:
       service: base
-    command: rm -rf node_modules && rm -rf coverage && rm -rf dist
+    command: rm -rf node_modules && rm -rf coverage && rm -rf dist && rm -rf dev_node_modules && rm -rf jest_0
 
   npmClean:
     extends:
       service: base
-    command: rm -rf node_modules" 
+    command: rm -rf node_modules
   
   version:
     extends:
       service: base
-    command: node -p \"require('./package.json').version.replace('\n', '')\"
+    command: ash -c "node -p \"require('./package.json').version.replace('\n', '')\""
 
   # output: node_modules/ with all dependencies
   devDeps:
@@ -66,17 +66,17 @@ services:
     command: npm run build
 
   # also deleting unneeded cache for minimal build size
-  prune:
+  # npm prune wasn't working on alpine linux
+  prodDeps:
     extends:
       service: base
-    command: npm prune --only=production
+    command: ash -c "mv -f ./node_modules ./dev_node_modules && npm install --only=production"
 
   # The current directory contains /dist, and /node_modules with only production dependencies
   staging-deps:
     image: myservice
     environment:
       - NODE_ENV=staging
-      - LOCALDB
     networks:
       - test
 
@@ -87,13 +87,19 @@ services:
     networks:
       - test
     environment:
-      - NODE_ENV=staging
       - graphqlURL=http://staging-deps:3010
+    command: npm run test:staging
+
+  qa:
+    extends: 
+      service: base
+    environment: 
+      - graphqlURL=${graphqlURL:-http://qa-api.yourwebsite.com}
     command: npm run test:staging
 
   production:
     extends: 
       service: base
     environment: 
-      - graphqlURL=${graphqlURL:-http://localhost:3010}
+      - graphqlURL=${graphqlURL:-http://api.yourwebsite.com}
     command: npm run test:staging
