@@ -15,11 +15,10 @@ node("docker") {
   }
 }
 
-def runCI(dir) {
+def runCI() {
   withEnv([
     "COMPOSE_FILE=docker-compose.ci.yml",
-    "EMAIL=pat@patscott.io",
-    "DIR=${dir}"
+    "EMAIL=pat@patscott.io"
   ]) {
 
     def prodDomain = "cd-example.devopsbliss.com"
