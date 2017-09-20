@@ -9,7 +9,7 @@ node("docker") {
   notifyBuild('STARTED')
   pull()
 
-  def dir = sh(command: "pwd", returnStdout:true)
+  def dir = sh(script: "pwd", returnStdout:true)
 
   try {
     runCI(dir)
