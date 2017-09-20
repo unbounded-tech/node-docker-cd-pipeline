@@ -186,7 +186,7 @@ def release(qaDomain, prodDomain, devImageVersion, prodImageVersion, stackName) 
   }
 }
 
-def deploy(stage, domain, imageVersion, stackName, lastTag) {
+def deploy(domain, imageVersion, stackName, lastTag) {
   withEnv([
     "SERVICE_DOMAIN=${domain}"
   ]) {
