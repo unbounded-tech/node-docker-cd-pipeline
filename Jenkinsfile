@@ -61,12 +61,11 @@ def installDevDependencies() {
 
 def runTests() {
   stage("Tests") {
-    notifyGithubLint()
-    notifyGithubUnit()
 
     parallel(
       lint: {
         try {
+          notifyGithubLint()
           sh "docker-compose run --rm lint"
           notifyGithubLint('SUCCESS')
         } catch(e) {
@@ -76,6 +75,7 @@ def runTests() {
       },
       unitTests: {
         try {
+          notifyGithubUnit()
           sh "docker-compose run --rm unit-tests"
           // sh "docker-compose run --rm codecov"
           notifyGithubUnit('SUCCESS')
