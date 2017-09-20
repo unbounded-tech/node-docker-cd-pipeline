@@ -60,16 +60,16 @@ def installDevDependencies() {
 
 def runTests() {
   stage("Tests") {
-    notifyGithub('Lint')
-    notifyGithub('UnitTests')
+    notifyGithubLint()
+    notifyGithubUnit()
 
     parallel(
       lint: {
         try {
           sh "docker-compose run --rm lint"
-          notifyGithub('Lint', 'SUCCESS')
+          notifyGithubLint('SUCCESS')
         } catch(e) {
-          notifyGithub('Lint', 'FAILURE')
+          notifyGithubLint('FAILURE')
           error "Linting Failed"
         }
       },
@@ -77,9 +77,9 @@ def runTests() {
         try {
           sh "docker-compose run --rm unit-tests"
           // sh "docker-compose run --rm codecov"
-          notifyGithub('UnitTests', 'SUCCESS')
+          notifyGithubUnit('SUCCESS')
         } catch(e) {
-          notifyGithub('UnitTests', 'FAILURE')
+          notifyGithubUnit('FAILURE')
           error "Unit Tests Failed"
         }
       }
@@ -115,15 +115,15 @@ def prepareStaging() {
 def runStagingTests() {
   withEnv([]) {
     try {
-      notifyGithub('StagingTests')
+      notifyGithubStaging()
 
       sh "docker-compose up -d staging-deps"
       sh "sleep 10"
       sh "docker-compose run --rm staging"
       
-      notifyGithub('StagingTests', 'SUCCESS')
+      notifyGithubStaging('SUCCESS')
     } catch(e) {
-      notifyGithub('StagingTests', 'FAILURE')
+      notifyGithubStaging('FAILURE')
       error "Staging failed"
     } finally {
       sh "docker-compose down"
@@ -245,16 +245,22 @@ def dockerTagAndPush(tag) {
     localhost:5000/${imageName}:${tag}"
 }
 
-def notifyGithub(String context, String status = 'PENDING') {
-  def contexts = {
-    Lint: 'Ensures coding standards are upheld',
-    UnitTests: 'Ensures code functions as expected and defined interfaces are tracked'
-    StagingTests: 'Ensures interfaces with external dependencies are working properly'
-  }
-  
+def notifyGithubLint(String status = "PENDING") {
+  notifyGithub('Lint', 'Ensures interfaces with external dependencies are working properly', status)
+}
+
+def notifyGithubUnit(String status = "PENDING") {
+  notifyGithub('Unit Tests', 'Ensures interfaces with external dependencies are working properly', status)
+}
+
+def notifyGithubStaging(String status = "PENDING") {
+  notifyGithub('Staging Tests', 'Ensures interfaces with external dependencies are working properly', status)
+}
+
+def notifyGithub(String context, String description, String status = 'PENDING') {  
   githubNotify  credentialsId: "${env.credentialsId}", 
                 context: context,
-                description: contexts[context],
+                description: description,
                 status: status
 }
 
