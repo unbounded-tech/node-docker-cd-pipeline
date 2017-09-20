@@ -17,12 +17,6 @@ services:
       - .:/usr/src/app/
     working_dir: /usr/src/app/
     environment:
-      - NPM_TOKEN=$NPM_TOKEN
-      - GH_TOKEN=$GH_TOKEN
-      - CI=true
-      - JENKINS_URL=$NPM_TOKEN
-      - GIT_BRANCH=$GIT_BRANCH
-      - SNYK_TOKEN=$SNYK_TOKEN
       - PORT=3000
 
   clean:
