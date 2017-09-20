@@ -49,6 +49,7 @@ def prepare() {
     fileExists 'docker-compose.ci.yml'
     fileExists 'Dockerfile'
     fileExists 'stack.yml'
+    fileExists 'package.json'
   }
 }
 
