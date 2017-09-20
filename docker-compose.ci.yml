@@ -13,6 +13,7 @@ services:
   # you may want to pass in from the CI server
   base:
     image: node:8-alpine
+    privileged: true
     volumes:
       - .:/usr/src/app/
     working_dir: /usr/src/app/
