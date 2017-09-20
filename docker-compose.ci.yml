@@ -36,8 +36,10 @@ services:
 
   # output: node_modules/ with all dependencies
   install:
-    extends:
-      service: base
+    image: node:8-alpine
+    volumes:
+      - .:/usr/src/app/
+    working_dir: /usr/src/app/
     command: npm i
 
   lint:
@@ -48,8 +50,10 @@ services:
     command: npm run lint
 
   unit-tests:
-    extends:
-      service: base
+    image: node:8-alpine
+    volumes:
+      - .:/usr/src/app/
+    working_dir: /usr/src/app/
     command: npm run test
 
   # output: dist/
