@@ -36,7 +36,7 @@ def runCI() {
     build(imageName)
     stagingTests()
     tryPublish(imageName, prodTag, prodLatestTag, devTag, devLatestTag)
-    release(qaDomain, prodDomain, devTag, prodTag, stackName)
+    release(qaDomain, prodDomain, devTag, prodTag, stackName, imageName)
   }
 }
 
@@ -163,14 +163,14 @@ def publish(String imageName, String tag, String latestTag) {
   }
 }
 
-def release(qaDomain, prodDomain, devImageVersion, prodImageVersion, stackName) {
+def release(qaDomain, prodDomain, devImageVersion, prodImageVersion, stackName, imageName) {
   if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev') {
       sh "docker-compose run --rm install"
 
       if (env.BRANCH_NAME == 'dev') {
         stage("QA") {
           withEnv(["NODE_ENV=staging"]) {
-            deploy(qaDomain, devImageVersion, stackName, 'last-qa')
+            deploy(qaDomain, devImageVersion, stackName, imageName, 'last-qa')
           }
         }
       }
@@ -178,7 +178,7 @@ def release(qaDomain, prodDomain, devImageVersion, prodImageVersion, stackName) 
       if (env.BRANCH_NAME == 'master') {
         stage("Production") {
           withEnv(["NODE_ENV=production"]) {
-            deploy(prodDomain, prodImageVersion, stackName, 'last-prod')
+            deploy(prodDomain, prodImageVersion, stackName, imageName, 'last-prod')
           }
         }
       }
@@ -195,7 +195,7 @@ def deploy(domain, imageVersion, stackName, lastTag) {
         "TAG=${imageVersion}"
       ]) {
         sh "docker stack deploy -c stack.yml qa-${stackName}"
-        dockerTagAndPush(lastTag)
+        dockerTagAndPush(imageName, lastTag)
       }
 
     } catch(e) {
