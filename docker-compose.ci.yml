@@ -40,21 +40,19 @@ services:
     volumes:
       - .:/usr/src/app/
     working_dir: /usr/src/app/
-    command: npm i
+    command: ash -c "npm i"
 
   lint:
     image: node:8-alpine
     volumes:
       - .:/usr/src/app/
     working_dir: /usr/src/app/
-    command: npm run lint
+    command: ash -c "npm run lint"
 
   unit-tests:
-    image: node:8-alpine
-    volumes:
-      - .:/usr/src/app/
-    working_dir: /usr/src/app/
-    command: npm run test
+    extends:
+      service: base
+    command: ash -c "npm run test"
 
   # output: dist/
   build:
