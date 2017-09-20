@@ -35,7 +35,7 @@ def runCI() {
     runTests()
     build(imageName)
     stagingTests()
-    tryPublish(prodTag, prodLatestTag, devTag, devLatestTag)
+    tryPublish(imageName, prodTag, prodLatestTag, devTag, devLatestTag)
     release()
   }
 }
@@ -143,24 +143,24 @@ def runStagingTests() {
   }
 }
 
-def tryPublish(String prodTag, String prodLatestTag, String devTag, String devLatestTag) {
+def tryPublish(String imageName, String prodTag, String prodLatestTag, String devTag, String devLatestTag) {
   if (env.BRANCH_NAME == 'master') {
-    publish(prodTag, prodLatestTag)
+    publish(imageName, prodTag, prodLatestTag)
   }
 
   if (env.BRANCH_NAME == 'dev') {
-    publish(devTag, devLatestTag)
+    publish(imageName, devTag, devLatestTag)
   }
 }
 
-def publish(String tag, String latestTag) {
+def publish(String imageName, String tag, String latestTag) {
   stage("Publish") {
     parallel(
       publishVersion: {
-        dockerTagAndPush(tag)
+        dockerTagAndPush(imageName, tag)
       },
       publishLatest: {
-        dockerTagAndPush(latestTag)
+        dockerTagAndPush(imageName, latestTag)
       }
     )
   }
@@ -244,7 +244,7 @@ def production() {
   }
 }
 
-def dockerTagAndPush(tag) {
+def dockerTagAndPush(imageName, tag) {
   sh "docker tag ${imageName} \
       localhost:5000/${imageName}:${tag}"
   sh "docker push \
