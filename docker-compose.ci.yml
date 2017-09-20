@@ -14,7 +14,7 @@ services:
   base:
     image: node:8-alpine
     volumes:
-      - ${DIR}:/usr/src/app/
+      - .:/usr/src/app/
     working_dir: /usr/src/app/
     environment:
       - PORT=3000
