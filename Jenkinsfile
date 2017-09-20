@@ -4,14 +4,15 @@ def imageName = "cd-example"
 def stackName = "cd-example"
 def prodImageVersion = "0.${env.BUILD_NUMBER}"
 def devImageVersion = "d${prodImageVersion}"
-def dir = sh(command: "pwd", returnStdout:true)
 
 node("docker") {
   notifyBuild('STARTED')
   pull()
 
+  def dir = sh(command: "pwd", returnStdout:true)
+
   try {
-    runCI()
+    runCI(dir)
   } catch (e) {
     // If there was an exception thrown, the build failed
     currentBuild.result = "FAILED"
@@ -23,7 +24,7 @@ node("docker") {
   }
 }
 
-def runCI() {
+def runCI(dir) {
   withEnv([
     "COMPOSE_FILE=docker-compose.ci.yml",
     "EMAIL=pat@patscott.io",
@@ -59,6 +60,7 @@ def prepare() {
     sh "cat Jenkinsfile"
     sh "cat package.json"
     sh "pwd"
+    sh "echo $DIR"
     sh "ls -la"
   }
 }
