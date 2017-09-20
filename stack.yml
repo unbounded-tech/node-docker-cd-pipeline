@@ -1,0 +1,40 @@
+version: "3.3"
+
+networks:
+
+  proxy:
+    external: true
+
+services:
+
+  example:
+    image: localhost:5000/cd-example:${TAG:-latest}
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - proxy
+    deploy:
+      resources:
+        reservations:
+          memory: 50M
+        limits:
+          memory: 200M
+      update_config:
+        parallelism: 1
+        delay: 60s
+      labels:
+        - com.df.notify=true
+        - com.df.distribute=true
+        - com.df.serviceDomain=$SERVICE_DOMAIN
+        - com.df.port=3000
+        - com.df.letsencrypt.host=$SERVICE_DOMAIN
+        - com.df.letsencrypt.email=$EMAIL
+        - com.df.alertName=memlimit
+        - com.df.alertIf=@service_mem_limit:0.8
+        - com.df.alertFor=5s
+        - com.df.scaleMin=1
+        - com.df.scaleMax=4
+      placement:
+        constraints:
+          - node.role == worker

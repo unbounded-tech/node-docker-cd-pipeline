@@ -13,17 +13,10 @@ services:
   # you may want to pass in from the CI server
   base:
     image: node:8-alpine
+    privileged: true
     volumes:
       - .:/usr/src/app/
     working_dir: /usr/src/app/
-    environment:
-      - NPM_TOKEN=$NPM_TOKEN
-      - GH_TOKEN=$GH_TOKEN
-      - CI=true
-      - JENKINS_URL=$NPM_TOKEN
-      - GIT_BRANCH=$GIT_BRANCH
-      - SNYK_TOKEN=$SNYK_TOKEN
-      - PORT=3000
 
   clean:
     extends:
@@ -44,17 +37,17 @@ services:
   install:
     extends:
       service: base
-    command: npm i
+    command: ash -c "npm i"
 
   lint:
     extends:
       service: base
-    command: npm run lint
+    command: ash -c "npm run lint"
 
   unit-tests:
     extends:
       service: base
-    command: npm run test
+    command: ash -c "npm run test"
 
   # output: dist/
   build:
@@ -76,9 +69,10 @@ services:
 
   # The current directory contains /dist, and /node_modules with only production dependencies
   staging-deps:
-    image: myservice
+    image: cd-example
     environment:
       - NODE_ENV=staging
+      - PORT=3000
     networks:
       - default
 
@@ -89,7 +83,7 @@ services:
     networks:
       - default
     environment:
-      - apiUrl=http://staging-deps:$PORT
+      - apiUrl=http://staging-deps:3000
     command: npm run test:staging
 
   qa:
